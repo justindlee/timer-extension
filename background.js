@@ -3,14 +3,18 @@ chrome.alarms.create({
 });
 
 chrome.alarms.onAlarm.addListener((alarm) => {
-  chrome.storage.local.get(["timer"], (res) => {
+  chrome.storage.local.get(["timer", 'shouldUpdateTime'], (res) => {
     const time = res.timer ?? 0;
-    chrome.storage.local.set({
-      timer: time + 1,
-    });
-    chrome.action.setBadgeText({
-      text: `${time + 1}`
-    });
+    const shouldUpdateTime = res.shouldUpdateTime ?? false;
+
+    if (shouldUpdateTime) {
+      chrome.storage.local.set({
+        timer: time + 1,
+      });
+      chrome.action.setBadgeText({
+        text: `${time + 1}`
+      });
+    }
 
     chrome.storage.sync.get(['notificationTime'], (result) => {
       const notificationTime = result.notificationTime ?? 1000;
